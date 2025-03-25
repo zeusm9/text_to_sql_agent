@@ -1,5 +1,4 @@
 import os
-import yaml
 from SQLTool import SQLTool
 from dotenv import load_dotenv
 from smolagents import ToolCallingAgent, LiteLLMModel, GradioUI
