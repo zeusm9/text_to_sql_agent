@@ -24,7 +24,7 @@ class SQLTool(Tool):
         Query:
         - show me the status of the certificate of the edge nodegraf.edge.panel.
         Action:
-        - considering the name of the table  is "certs" and the node name is in the column "common_name", call tool with fist paremeter 'action' equal to 'execute_query' and second parameter 'query' equal to 'select status from certs where common_name = 'nodegraf.edge.panel''
+        - considering the name of the table  is "certs" and the node name is in the column "common_name", call tool with 'query' equal to 'select status from certs where common_name = 'nodegraf.edge.panel''
         """
     )
     inputs = {

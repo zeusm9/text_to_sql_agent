@@ -26,21 +26,7 @@ schema_description = sql_tool.get_db_schema()
 
 agent = ToolCallingAgent(
     tools=[sql_tool],
-    model=model,
-    description=f"""
-        This is an efficient and user-friendly tool designed to gather information about certificates contained in a SQL database.
-        This tool can find the information of the certificates in the SQL database and return it in a readable format. 
-        Rephrase the response in a human readable format without inserting the sql query or other dirty tokens.
-        Considering the name of the table of the database is 'certs' and the table has
-        the following schema: {schema_description}\nUse the sql_executor tool to run SQL
-        queries on the certs table
-        
-        Few-Shot Example:
-        Query:
-        - show me the status of the certificate of the edge nodegraf.edge.panel.
-        Action:
-        - considering the name of the table  is "certs" and the node name is in the column "common_name", call tool with fist paremeter 'action' equal to 'execute_query' and second parameter 'query' equal to 'select status from certs where common_name = "nodegraf.edge.panel"'
-        """
+    model=model
 )
 
 GradioUI(agent).launch()
