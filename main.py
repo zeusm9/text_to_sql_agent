@@ -1,31 +1,51 @@
 import os
 from SQLTool import SQLTool
 from dotenv import load_dotenv
-from smolagents import ToolCallingAgent, LiteLLMModel, GradioUI
+from smolagents import LiteLLMModel, GradioUI, CodeAgent
 
 if __name__ == "__main__":
     load_dotenv()
 
-model = LiteLLMModel(
-    model_id="sambanova/Meta-Llama-3.3-70B-Instruct",
-    api_base="https://api.sambanova.ai/v1",
-    api_key=os.getenv("SAMBANOVA_API_KEY"),
-    max_tokens=500
-)
+    model = LiteLLMModel(
+        model_id="sambanova/Meta-Llama-3.3-70B-Instruct",
+        api_base="https://api.sambanova.ai/v1",
+        api_key=os.getenv("SAMBANOVA_API_KEY"),
+        temperature = 0,
+        max_tokens=6000
+    )
 
-sql_tool = SQLTool(
-    db=os.getenv("POSTGRES_DB"),
-    user=os.getenv("POSTGRES_USER"),
-    password=os.getenv("POSTGRES_PASSWORD"),
-    port=os.getenv("POSTGRES_PORT"),
-    host=os.getenv("POSTGRES_HOST")
-)
+    tool_description =  f"""
+    A tool designed to execute SQL queries on a structured database and return the results as a string. 
+    It supports SELECT queries for data retrieval, including filtering, aggregation, and joins. 
+    The tool processes queries efficiently and returns results in a human-readable string format. 
+    Ensure queries are well-formed to prevent errors. Avoid SQL injection by properly handling input parameters.
+    """
 
-schema_description = sql_tool.get_db_schema()
+    tool_inputs = {
+            "query": {
+                "type": "string",
+                "description": "A valid SQL query string."
+            }
+        }
 
-agent = ToolCallingAgent(
-    tools=[sql_tool],
-    model=model
-)
+    tool_output_type = "string"
 
-GradioUI(agent).launch()
+    sql_tool = SQLTool(
+        db=os.getenv("POSTGRES_DB"),
+        user=os.getenv("POSTGRES_USER"),
+        password=os.getenv("POSTGRES_PASSWORD"),
+        port=os.getenv("POSTGRES_PORT"),
+        host=os.getenv("POSTGRES_HOST"),
+        table_name= os.getenv("POSTGRES_TABLE_NAME"),
+        name="sql_executor",
+        description=tool_description,
+        inputs=tool_inputs,
+        output_type=tool_output_type
+    )
+    print(sql_tool.description)
+    agent = CodeAgent(
+        tools=[sql_tool],
+        model=model
+    )
+
+    GradioUI(agent).launch()
